@@ -67,30 +67,25 @@ window.addEventListener('load', function(){
     var fire=false;
 
 
-    myTouchPad.style.top=yCenter-myTouchPad.offsetWidth/2;
+    
+    myTouchPad.style.visibility="hidden";
+    
+    
+    document.addEventListener('touchstart', function(e){
+
+myTouchPad.style.visibility="visible";
+    
+    var touchobj = e.changedTouches[0];
+        
+        
+         xCenter=touchobj.pageX ;
+         yCenter =touchobj.pageY ;
+         
+         myTouchPad.style.top=yCenter-myTouchPad.offsetWidth/2;
     myTouchPad.style.left=xCenter-myTouchPad.offsetHeight/2;
     
     
-    myPadDot.style.top=yCenter-myPadDot.offsetWidth/2;
-    myPadDot.style.left=xCenter-myPadDot.offsetHeight/2;
-      
-    myTouchPadFire.style.top=yCenter-myTouchPadFire.offsetHeight/2;
-    myTouchPadFire.style.left=xCenter-myTouchPadFire.offsetHeight*2.5;
-      
-    myTouchPadFire.addEventListener('touchstart', function (e){
-    fire=true;
-    });
-    myTouchPadFire.addEventListener('touchend', function(e){
-      fire=false;
-    });
-    myTouchPad.addEventListener('touchstart', function(e){
-
-
-
-    var touchobj = e.changedTouches[0];
-       
-      
-         myPadDot.style.display = "inline";
+         
     radiusLimit=myTouchPad.offsetWidth/2-myPadDot.offsetWidth/2;
 
     });
@@ -99,7 +94,7 @@ window.addEventListener('load', function(){
     
     
     
- myTouchPad.addEventListener('touchmove', function(e){
+ document.addEventListener('touchmove', function(e){
        
         
         var  touchobj = e.changedTouches[0];
@@ -122,23 +117,24 @@ window.addEventListener('load', function(){
         
         if(degree<0){degree+=360;}
         move=true;
+        
         degree+=90;
 
         tank1.style.transform = "rotate("+(degree)+"deg)";
         if (currentPos < radiusLimit){
-        speed_x = currentX/10;
-        speed_y =currentY/(10);
+        speed_x = currentX/15;
+        speed_y =currentY/15;
          myPadDot.style.left = touchobj.pageX;
          myPadDot.style.top = touchobj.pageY;
-         
+         fire=false;
          }
          else{
-    
+         fire=true;
 
         myPadDot.style.left = radiusLimit*Math.cos(alpha)+xCenter-myPadDot.offsetWidth/2;
-        speed_x =(radiusLimit*Math.cos(alpha))/10;
+        speed_x =(radiusLimit*Math.cos(alpha))/15;
         myPadDot.style.top =( radiusLimit*Math.sin(alpha)+ yCenter)-myPadDot.offsetWidth/2;
-        speed_y=(radiusLimit*Math.sin(alpha))/(10);
+        speed_y=(radiusLimit*Math.sin(alpha))/15;
         
         
          }
@@ -146,16 +142,24 @@ window.addEventListener('load', function(){
 
     });
     
-myTouchPad.addEventListener('touchend', function(e){
+document.addEventListener('touchend', function(e){
         myPadDot.style.left=xCenter-myPadDot.offsetWidth/2;
         myPadDot.style.top=yCenter-myPadDot.offsetWidth/2;
-        myPadDot.style.display = "none";
+       myPadDot.style.display = "none";
+       myTouchPad.style.visibility="hidden";
+       
         speed_x=0;
         speed_y=0;
         move =false;
+        fire=false;
 
     });
     
+    
+    
+    
+    
+
     
     
     var canvas = id("canvas");
@@ -219,9 +223,9 @@ class Bullets{
         this.x = x;
         this.y = y;
 
-        this.speed = 7;
+        this.speed = 10;
         this.angle = angle; 
-        this.color ="color";
+        this.color =color;
       }  
     
       update(){
@@ -236,7 +240,7 @@ class Bullets{
         
     
         c.font = "30px Arial";
-        c.fillStyle = "red";
+        c.fillStyle = this.color;
         c.textAlign = "center";
         c.fillText("•", this.x, this.y);
     
@@ -268,14 +272,11 @@ function GAMELOOP(currentTime){
   window.requestAnimationFrame(GAMELOOP);
   c.clearRect(0, 0, canvas.width, canvas.height);
 
-if(move==true){
-  fire=false;
-myTouchPadFire.style.visibility = "hidden";
-        
-}else{
-myTouchPadFire.style.visibility = "visible";
-}
 
+
+
+  
+  
   for (var i = bullets.length - 1; i >= 0; i--){
     bullets[i].update();
     if (bullets[i].x < 0 || bullets[i].x > canvas.width || bullets[i].y > canvas.height || bullets[i].y < 0){
@@ -287,7 +288,7 @@ myTouchPadFire.style.visibility = "visible";
   
   
   if(fire==true){
-    if(currentTime >= lastTime + 150){
+    if(currentTime >= lastTime + 100){
   
       lastTime = currentTime;
       player.shoot();
@@ -328,7 +329,7 @@ body {
     
     width:100px;
     height:100px;
-    opacity:0.5;
+    opacity:0.3;
     background-color:gray;
     
 }
@@ -345,15 +346,7 @@ body {
     
 }
 
-#touchPadFire{
-    border: 3px solid black;
-    
-    width:100px;
-    height:100px;
-    opacity:0.3;
-    background-color:lime;
-    
-}
+
 
 #tank1{
 width:30px;
