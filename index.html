@@ -1,12 +1,372 @@
-<!DOCTYPE html>
 <html>
-<body>
+    <head>
+       
+        <title></title>
+    </head>
+    <body>
+      <meta name="viewport"
+  content="
+    height = device-height,
+    width = device-width,
+    initial-scale = 1.0,
+    minimum-scale = 1.0,
+    maximum-scale = 1.0,
+    user-scalable = no,
+    target-densitydpi = device-dpi
+    " />
+      <br><br>
+    <div class="pads" id="touchPadFire"></div>
 
-<audio controls>
-  <source src="https://github.com/sharad9/MINI-FREE-FIRE/blob/master/smb_fireworks.wav" type="audio/ogg">
+        <div class="pads" id="touchPad"></div>
+        <div class="pads" id="padDot"></div>
+        <canvas id="canvas"></canvas>
+        
+        <img id="tank1" src="https://i.ibb.co/LRFsjhy/Clipart-Key-1708882.png">
+     
+      
+
+    
+
+
+
+<script>
+window.addEventListener('load', function(){
+
+    
+    var log = console.log;
+    
+    var lastTime=0;
+    var bullets=[];
+    
+    var myTouchPadFire=document.getElementById("touchPadFire");
+    var myTouchPad = document.getElementById( "touchPad");
+    var myPadDot = document.getElementById( "padDot");
+ 
+    var tank1 = document.getElementById('tank1');
+    
+    var currentX;
+    var currentY;
+
+
+    var alpha;
+    var radiusLimit;
+    
+    var ratio=window.innerHeight/window.innerWidth;
   
-Your browser does not support the audio element.
-</audio>
+    var xCenter = window.innerWidth/1.3;
+    var yCenter = (window.innerHeight/1.2)
+    var degree=0;
+    var speed_x = 0;
+    var speed_y = 0;
+    var player_x =  window.innerWidth/2;
+    var player_y = (window.innerHeight/2);
 
-</body>
+
+    var player;       
+    var move=false;
+    var fire=false;
+
+
+    myTouchPad.style.top=yCenter-myTouchPad.offsetWidth/2;
+    myTouchPad.style.left=xCenter-myTouchPad.offsetHeight/2;
+    
+    
+    myPadDot.style.top=yCenter-myPadDot.offsetWidth/2;
+    myPadDot.style.left=xCenter-myPadDot.offsetHeight/2;
+      
+    myTouchPadFire.style.top=yCenter-myTouchPadFire.offsetHeight/2;
+    myTouchPadFire.style.left=xCenter-myTouchPadFire.offsetHeight*2.5;
+      
+    myTouchPadFire.addEventListener('touchstart', function (e){
+    fire=true;
+    });
+    myTouchPadFire.addEventListener('touchend', function(e){
+      fire=false;
+    });
+    myTouchPad.addEventListener('touchstart', function(e){
+
+
+
+    var touchobj = e.changedTouches[0];
+         myPadDot.style.left = touchobj.pageX
+         myPadDot.style.top = touchobj.pageY;
+      
+         myPadDot.style.display = "inline";
+    radiusLimit=myTouchPad.offsetWidth/2-myPadDot.offsetWidth/2;
+
+    });
+    
+    
+    
+    
+    
+ myTouchPad.addEventListener('touchmove', function(e){
+       
+        
+        var  touchobj = e.changedTouches[0];
+        myPadDot.style.display = "inline";
+        
+        currentX = parseInt(touchobj.pageX, 10) - xCenter;
+        currentY = parseInt(touchobj.pageY, 10) - yCenter;
+
+
+        
+        x2 = Math.pow( currentX,2)
+        y2 = Math.pow( currentY ,2)
+        currentPos = Math.sqrt(x2 + y2);
+        alpha = Math.atan( currentY / currentX );
+        
+        if (currentX<0){
+        alpha=alpha+Math.PI;
+        }
+        degree=(alpha)*(180/Math.PI);
+        
+        if(degree<0){degree+=360;}
+        move=true;
+        degree+=90;
+
+        tank1.style.transform = "rotate("+(degree)+"deg)";
+        if (currentPos < radiusLimit){
+        speed_x = currentX/10;
+        speed_y =currentY/(10);
+         myPadDot.style.left = touchobj.pageX;
+         myPadDot.style.top = touchobj.pageY;
+         
+         }
+         else{
+    
+
+        myPadDot.style.left = radiusLimit*Math.cos(alpha)+xCenter-myPadDot.offsetWidth/2;
+        speed_x =(radiusLimit*Math.cos(alpha))/10;
+        myPadDot.style.top =( radiusLimit*Math.sin(alpha)+ yCenter)-myPadDot.offsetWidth/2;
+        speed_y=(radiusLimit*Math.sin(alpha))/(10);
+        
+        
+         }
+       
+
+    });
+    
+myTouchPad.addEventListener('touchend', function(e){
+        myPadDot.style.left=xCenter-myPadDot.offsetWidth/2;
+        myPadDot.style.top=yCenter-myPadDot.offsetWidth/2;
+        myPadDot.style.display = "none";
+        speed_x=0;
+        speed_y=0;
+        move =false;
+
+    });
+    
+    
+    
+    var canvas = id("canvas");
+var c = canvas.getContext("2d");
+
+
+
+
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight - 5;
+
+  
+function id(arg){
+  return document.getElementById(arg);
+} 
+ 
+ 
+
+class Player{
+    constructor(x, y, width, height,angle){
+
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.angle = angle ;
+    }
+
+    update(){
+        
+        tank1.style.left=(this.x+this.width/2);
+           
+        tank1.style.top = (this.y+(this.height*1.355));
+    
+        if(this.x + this.width*2 > canvas.width) this.x = canvas.width - this.width*2; 
+        if(this.x < 0) this.x = 0;
+        if(this.y + this.height*2 > canvas.height) this.y = canvas.height - this.height*2; 
+        if(this.y < 0) this.y = 0; 
+        
+        if(move==true) {
+    
+          this.x+=speed_x;
+          this.y+=speed_y;
+    
+        }
+    
+    }
+    shoot(){
+       
+        var bullet = new Bullets(this.x + this.width, this.y + this.height ,degree  ,"red");
+        bullets.push(bullet);
+    
+        }
+
+}
+
+
+class Bullets{
+      constructor(x, y, angle, color){
+        this.x = x;
+        this.y = y;
+
+        this.speed = 7;
+        this.angle = angle; 
+        this.color ="color";
+      }  
+    
+      update(){
+
+        c.beginPath();
+        c.save();
+        
+        c.fillStyle = this.color;
+        c.translate(this.x , this.y );
+        c.rotate(this.angle * Math.PI/180);
+        c.translate(-this.x , -this.y );
+        
+    
+        c.font = "30px Arial";
+        c.fillStyle = "red";
+        c.textAlign = "center";
+        c.fillText("•", this.x, this.y);
+    
+
+  
+        c.fill();
+        c.restore();
+        c.closePath();
+
+   
+        this.x += this.speed * Math.sin( this.angle * Math.PI/180 );
+        this.y += this.speed * -Math.cos( this.angle * Math.PI/180 );
+
+     }
+
+
+}
+
+
+player = new Player(window.innerWidth/2, window.innerHeight/2, tank1.width, tank1.height);
+
+//GAMELOOP();
+
+
+
+
+function GAMELOOP(currentTime){
+
+  window.requestAnimationFrame(GAMELOOP);
+  c.clearRect(0, 0, canvas.width, canvas.height);
+
+if(move==true){
+  fire=false;
+myTouchPadFire.style.visibility = "hidden";
+        
+}else{
+myTouchPadFire.style.visibility = "visible";
+}
+
+  for (var i = bullets.length - 1; i >= 0; i--){
+    bullets[i].update();
+    if (bullets[i].x < 0 || bullets[i].x > canvas.width || bullets[i].y > canvas.height || bullets[i].y < 0){
+      bullets.splice(i, 1);
+    }
+  }
+  
+   player.update();
+  
+  
+  if(fire==true){
+    if(currentTime >= lastTime + 150){
+  
+      lastTime = currentTime;
+      player.shoot();
+
+     
+  }    
+    }
+
+  
+};
+
+    GAMELOOP ();
+
+
+  });      
+</script>
+
+<style >
+
+body {
+    position: fixed;
+    margin: 0;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.pads {
+    position: fixed;
+    border-radius: 50%;
+       user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+}
+
+#touchPad{
+    border: 2px solid black;
+    
+    width:100px;
+    height:100px;
+    opacity:0.3;
+    background-color:gray;
+    
+}
+
+#padDot{
+    border: 1px solid black;
+    display:none;
+    width:25px;
+    height:25px;
+    
+    opacity:0.3;
+    background-color: #f2f2f2;
+    
+    
+}
+
+#touchPadFire{
+    border: 2px solid black;
+    
+    width:100px;
+    height:100px;
+    opacity:0.3;
+    background-color:red;
+    
+}
+
+#tank1{
+width:30px;
+height:50px;
+    
+    position:absolute;
+}
+  #navbar-iframe-container{
+   display: none;
+}
+
+    
+</style>
+ </body>
 </html>
