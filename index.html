@@ -88,8 +88,7 @@ window.addEventListener('load', function(){
 
 
     var touchobj = e.changedTouches[0];
-         myPadDot.style.left = touchobj.pageX
-         myPadDot.style.top = touchobj.pageY;
+       
       
          myPadDot.style.display = "inline";
     radiusLimit=myTouchPad.offsetWidth/2-myPadDot.offsetWidth/2;
@@ -207,7 +206,7 @@ class Player{
     }
     shoot(){
        
-        var bullet = new Bullets(this.x + this.width, this.y + this.height ,degree  ,"red");
+        var bullet = new Bullets(this.x + this.width, this.y + this.height ,degree  ,"black");
         bullets.push(bullet);
     
         }
@@ -325,34 +324,34 @@ body {
 }
 
 #touchPad{
-    border: 2px solid black;
+    border: 3px solid black;
     
     width:100px;
     height:100px;
-    opacity:0.3;
+    opacity:0.5;
     background-color:gray;
     
 }
 
 #padDot{
-    border: 1px solid black;
+    border: 3px solid black;
     display:none;
     width:25px;
     height:25px;
     
-    opacity:0.3;
+    opacity:0.5;
     background-color: #f2f2f2;
     
     
 }
 
 #touchPadFire{
-    border: 2px solid black;
+    border: 3px solid black;
     
     width:100px;
     height:100px;
     opacity:0.3;
-    background-color:red;
+    background-color:lime;
     
 }
 
