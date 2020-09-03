@@ -35,10 +35,17 @@ window.addEventListener('load', function(){
     
     var log = console.log;
     
+    
+    var enemies = []; //array to hold n enemies
+    var enemyImg = new Image();
+    enemyImg.src = "https://image.ibb.co/gi6ZpU/ufo.png";   // "https://image.ibb.co/bX9UuU/ufo_1.png"; //
+    var enemy_width = 30;
+    var enemy_height = 30;
+    
     var lastTime=0;
     var bullets=[];
     
-    var myTouchPadFire=document.getElementById("touchPadFire");
+
     var myTouchPad = document.getElementById( "touchPad");
     var myPadDot = document.getElementById( "padDot");
  
@@ -55,7 +62,7 @@ window.addEventListener('load', function(){
   
     var xCenter = window.innerWidth/1.3;
     var yCenter = (window.innerHeight/1.2)
-    var degree=0;
+    var degree;
     var speed_x = 0;
     var speed_y = 0;
     var player_x =  window.innerWidth/2;
@@ -65,6 +72,7 @@ window.addEventListener('load', function(){
     var player;       
     var move=false;
     var fire=false;
+    var tank1Pos={x:0,y:0};
 
 
     
@@ -84,7 +92,7 @@ myTouchPad.style.visibility="visible";
          myTouchPad.style.top=yCenter-myTouchPad.offsetWidth/2;
     myTouchPad.style.left=xCenter-myTouchPad.offsetHeight/2;
     
-    
+     
          
     radiusLimit=myTouchPad.offsetWidth/2-myPadDot.offsetWidth/2;
 
@@ -95,7 +103,8 @@ myTouchPad.style.visibility="visible";
     
     
  document.addEventListener('touchmove', function(e){
-       
+        move=true;
+        fire=true;
         
         var  touchobj = e.changedTouches[0];
         myPadDot.style.display = "inline";
@@ -116,25 +125,24 @@ myTouchPad.style.visibility="visible";
         degree=(alpha)*(180/Math.PI);
         
         if(degree<0){degree+=360;}
-        move=true;
         
         degree+=90;
 
         tank1.style.transform = "rotate("+(degree)+"deg)";
         if (currentPos < radiusLimit){
-        speed_x = currentX/15;
-        speed_y =currentY/15;
+        speed_x = currentX/20;
+        speed_y =currentY/(20);
          myPadDot.style.left = touchobj.pageX;
          myPadDot.style.top = touchobj.pageY;
-         fire=false;
+         
          }
          else{
-         fire=true;
+         
 
         myPadDot.style.left = radiusLimit*Math.cos(alpha)+xCenter-myPadDot.offsetWidth/2;
-        speed_x =(radiusLimit*Math.cos(alpha))/15;
+        speed_x =(radiusLimit*Math.cos(alpha))/20;
         myPadDot.style.top =( radiusLimit*Math.sin(alpha)+ yCenter)-myPadDot.offsetWidth/2;
-        speed_y=(radiusLimit*Math.sin(alpha))/15;
+        speed_y=(radiusLimit*Math.sin(alpha))/20;
         
         
          }
@@ -155,11 +163,6 @@ document.addEventListener('touchend', function(e){
 
     });
     
-    
-    
-    
-    
-
     
     
     var canvas = id("canvas");
@@ -190,10 +193,27 @@ class Player{
     }
 
     update(){
+        c.beginPath();
+        c.save();
+        c.fillStyle = this.color;
+        c.lineWidth = 3;
+
+        // Rotate player
+        c.translate(this.x + (this.width), this.y + (this.height));
+        c.rotate(this.angle * Math.PI/180);
+        c.translate(-this.x -(this.width/2), -this.y -this.height/2);
         
-        tank1.style.left=(this.x+this.width/2);
-           
-        tank1.style.top = (this.y+(this.height*1.355));
+       //c.rect(this.x, this.y, this.width, this.height);
+        tank1Pos.x=this.x+this.width/1.75;
+        tank1Pos.y=this.y+this.height*1.4;
+        tank1.style.left=tank1Pos.x;
+        tank1.style.top=tank1Pos.y;
+
+        c.stroke();
+        c.fill();
+        c.restore();
+        c.closePath();
+      
     
         if(this.x + this.width*2 > canvas.width) this.x = canvas.width - this.width*2; 
         if(this.x < 0) this.x = 0;
@@ -210,50 +230,59 @@ class Player{
     }
     shoot(){
        
-        var bullet = new Bullets(this.x + this.width, this.y + this.height ,degree  ,"black");
+        var bullet = new Bullets(this.x + this.width, this.y + this.height,2,8,degree  ,"red");
         bullets.push(bullet);
     
         }
+
+    targetDeathDetection(){
+        for (var i =bullets.length - 1; i >= 0; i--) {
+            for (var j=enemies.length-1;j>=0;j--){
+                if(collision(bullets[i],enemies[j])){
+                  enemies.splice(j,1);
+                
+            }
+            }
+            
+        }
+    }    
+
 
 }
 
 
 class Bullets{
-      constructor(x, y, angle, color){
+      constructor(x, y,width,height, angle, color){
         this.x = x;
         this.y = y;
-
-        this.speed = 10;
+        this.width=width;
+        this.height=height;
+        this.speed = 7;
         this.angle = angle; 
-        this.color =color;
+        this.color ="color";
       }  
     
       update(){
-
         c.beginPath();
         c.save();
-        
         c.fillStyle = this.color;
-        c.translate(this.x , this.y );
+        c.translate(this.x + (this.width), this.y + (this.height));
         c.rotate(this.angle * Math.PI/180);
-        c.translate(-this.x , -this.y );
+        c.translate(-this.x -(this.width/2), -this.y -this.height/2);
         
-    
         c.font = "30px Arial";
-        c.fillStyle = this.color;
+        c.fillStyle = "black";
         c.textAlign = "center";
-        c.fillText("•", this.x, this.y);
-    
-
-  
+        //c.lineWidth=1;
+        c.rect(this.x, this.y, this.width, this.height);
+        //c.fillText("•", this.x, this.y);
         c.fill();
+        c.stroke();
         c.restore();
         c.closePath();
-
-   
-        this.x += this.speed * Math.sin( this.angle * Math.PI/180 );
-        this.y += this.speed * -Math.cos( this.angle * Math.PI/180 );
-
+    // Bullet movement
+    this.x += this.speed * Math.sin( this.angle * Math.PI/180 );
+    this.y += this.speed * -Math.cos( this.angle * Math.PI/180 );
      }
 
 
@@ -264,6 +293,67 @@ player = new Player(window.innerWidth/2, window.innerHeight/2, tank1.width, tank
 
 //GAMELOOP();
 
+class Enemy{
+  constructor(x, y, width, height, speed){
+  this.x = x;
+  this.y = y;
+  this.width = width;
+  this.height = height;
+  this.speed = speed;
+  }
+  
+  update(){
+    
+   
+    if(this.x<tank1Pos.x){
+        this.x+= this.speed;
+
+    }if(this.x>tank1Pos.x){
+        this.x-= this.speed;
+
+    } if(this.y>tank1Pos.y){
+        this.y-= this.speed;
+    } if(this.y<tank1Pos.y){
+        this.y+= this.speed;
+    }
+  
+  
+    c.beginPath();
+    c.save();
+    
+    c.lineWidth=0.5;
+    c.rect(this.x, this.y, this.width, this.height);
+    //c.fill();
+    c.stroke();
+    c.restore();
+    c.closePath();
+    c.drawImage(enemyImg, this.x, this.y,this.width,this.height);
+  
+  
+}
+}
+
+
+function collision(a,b){
+  return a.x < b.x + b.width &&
+         a.x + a.width > b.x &&
+         a.y < b.y + b.height &&
+         a.y + a.height > b.y;
+}
+
+
+//draw n enemies into enemies array
+function drawEnemies(){
+  for (var _ = 0; _<10; _++){ 
+    var x = Math.random()*(innerWidth-enemy_width);
+    var y = Math.random()*(innerWidth-enemy_height);
+    var width = enemy_width;
+    var height = enemy_height;
+    var speed = Math.random()*1;
+    var enemy = new Enemy(x, y, width, height, speed);
+    enemies.push(enemy); //push enemy to my array of enemies
+  }
+}
 
 
 
@@ -271,12 +361,12 @@ function GAMELOOP(currentTime){
 
   window.requestAnimationFrame(GAMELOOP);
   c.clearRect(0, 0, canvas.width, canvas.height);
+  if(enemies.length==0){
+     drawEnemies();
+
+  }
 
 
-
-
-  
-  
   for (var i = bullets.length - 1; i >= 0; i--){
     bullets[i].update();
     if (bullets[i].x < 0 || bullets[i].x > canvas.width || bullets[i].y > canvas.height || bullets[i].y < 0){
@@ -285,25 +375,34 @@ function GAMELOOP(currentTime){
   }
   
    player.update();
+   player.targetDeathDetection();
   
   
   if(fire==true){
-    if(currentTime >= lastTime + 100){
+    if(currentTime >= lastTime + 150){
   
       lastTime = currentTime;
       player.shoot();
+      
 
      
   }    
     }
+    
 
+  for(var x=enemies.length-1;x>=0;x--){
+      enemies[x].update();
+  }
+
+     
+  
   
 };
-
+  
     GAMELOOP ();
 
 
-  });      
+  });
 </script>
 
 <style >
