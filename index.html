@@ -176,8 +176,8 @@ var c = canvas.getContext("2d");
 
 
 
-canvas.width = window.innerWidth*2;
-canvas.height = window.innerHeight*2;
+canvas.width = window.innerWidth-10;
+canvas.height = window.innerHeight-10;
 
   
 function id(arg){
@@ -281,7 +281,7 @@ class Bullets{
         //c.textAlign = "center";
         //c.lineWidth=1;
         c.rect(this.x, this.y, this.width, this.height);
-        //c.fillText("•", this.x, this.y);
+       // c.fillText("&uarr;", this.x, this.y);
         c.fill();
         c.stroke();
         c.restore();
@@ -331,15 +331,15 @@ class Enemy{
     c.lineWidth=1;
     //c.rect(this.x, this.y, this.width, this.height/5);
     var health_left=(this.health/5);
-    c.fillStyle="red"
-    c.fillRect( this.x+this.width/2, this.y+this.height/2, this.width*health_left, this.height/10 );
+    c.fillStyle="lime"
+    c.fillRect( this.x, this.y, this.width*health_left, this.height/10 );
     c.lineWidth=0.5;
     //c.rect(this.x+this.width/2, this.y+this.height/2, this.width, this.height);
     //c.fill();
     c.stroke();
     c.restore();
     c.closePath();
-    c.drawImage(enemyImg, this.x+this.width/2, this.y+this.height/2,this.width,this.height);
+    c.drawImage(enemyImg, this.x, this.y,this.width,this.height);
   
   
 }
