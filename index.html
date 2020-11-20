@@ -1,9 +1,11 @@
-<html>
+<html oncontextmenu="return false">
     <head>
        
         <title></title>
     </head>
     <body>
+      <button id="myBtn"><strong>Music</strong></button>
+      
     <meta name="viewport"
   content="
     height = device-height,
@@ -14,8 +16,9 @@
     user-scalable = no,
     target-densitydpi = device-dpi
     " />
-
-      <br><br>
+ <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, width=device-width">
+   
+      
     <div class="pads" id="touchPadFire"></div>
 
         <div class="pads" id="touchPad"></div>
@@ -24,28 +27,62 @@
         
         <img id="tank1" src="https://i.ibb.co/LRFsjhy/Clipart-Key-1708882.png">
      
-      
-
-    
+  
+     
+        <!-- Opponent Car -->
+        
+        <div id="oponent-car">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car1">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car2">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car3">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car4">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car5">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car6">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car7">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car8">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car9">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car10">
+            
+        </div>
+   
 
 
 
 <script>
 window.addEventListener('load', function(){
 
-    
+    document.onkeydown = function (e) { 
+            if (event.keyCode == 123) { 
+                return false; 
+            } 
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { 
+                return false; 
+            } 
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { 
+                return false; 
+            } 
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { 
+                return false; 
+            } 
+            if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { 
+                return false; 
+            } 
+        } 
     var log = console.log;
     
     
     var enemies = []; //array to hold n enemies
     var enemyImg = new Image();
-    enemyImg.src = "https://image.ibb.co/gi6ZpU/ufo.png";   // "https://image.ibb.co/bX9UuU/ufo_1.png"; //
+    enemyImg.src ="https://image.ibb.co/gi6ZpU/ufo.png";   // "https://image.ibb.co/bX9UuU/ufo_1.png"; //
+    var aliens  = [];
+  	
+  
     var enemy_width = 30;
     var enemy_height = 30;
     var enemy_health=5;
     
     var lastTime=0;
-    var bullet_width=2,bullet_height=8;
+    var bullet_width=3,bullet_height=8;
     var bullets=[];
     
 
@@ -78,35 +115,44 @@ window.addEventListener('load', function(){
     var fire=false;
     var tank1Pos={x:0,y:0};
 
-
+	
     
-    myTouchPad.style.visibility="hidden";
+   myTouchPad.style.visibility="hidden";
     
     
-    document.addEventListener('touchstart', function(e){
-
-myTouchPad.style.visibility="visible";
-    
-    var touchobj = e.changedTouches[0];
-        
-        
-         xCenter=touchobj.pageX ;
-         yCenter =touchobj.pageY ;
-         
+   document.addEventListener('touchstart', function(e){
+     
          myTouchPad.style.top=yCenter-myTouchPad.offsetWidth/2;
-    myTouchPad.style.left=xCenter-myTouchPad.offsetHeight/2;
+      myTouchPad.style.left=xCenter-myTouchPad.offsetHeight/2;
     
+ radiusLimit=myTouchPad.offsetWidth/2-myPadDot.offsetWidth/2;
+myTouchPad.style.visibility="visible";
+     
+   });
+  
+  
+  
+  // myTouchPad.addEventListener('touchstart', function(e){
+
+//myTouchPad.style.visibility="visible";
+ //  };
+  //  var touchobj = e.changedTouches[0];
+        
+        
+        // xCenter=touchobj.pageX ;
+        // yCenter =touchobj.pageY ;
+         
      
          
-    radiusLimit=myTouchPad.offsetWidth/2-myPadDot.offsetWidth/2;
+   
 
-    });
+   // });
     
     
     
     
     
- document.addEventListener('touchmove', function(e){
+ myTouchPad.addEventListener('touchmove', function(e){
         move=true;
         fire=true;
         
@@ -136,8 +182,8 @@ myTouchPad.style.visibility="visible";
         if (currentPos < radiusLimit){
         speed_x = currentX/20;
         speed_y =currentY/(20);
-         myPadDot.style.left = touchobj.pageX;
-         myPadDot.style.top = touchobj.pageY;
+         myPadDot.style.left = touchobj.pageX-myPadDot.offsetWidth/2;
+         myPadDot.style.top = touchobj.pageY-myPadDot.offsetWidth/2;
          
          }
          else{
@@ -154,11 +200,11 @@ myTouchPad.style.visibility="visible";
 
     });
     
-document.addEventListener('touchend', function(e){
+myTouchPad.addEventListener('touchend', function(e){
         myPadDot.style.left=xCenter-myPadDot.offsetWidth/2;
         myPadDot.style.top=yCenter-myPadDot.offsetWidth/2;
        myPadDot.style.display = "none";
-       myTouchPad.style.visibility="hidden";
+      // myTouchPad.style.visibility="hidden";
        
         speed_x=0;
         speed_y=0;
@@ -203,23 +249,21 @@ class Player{
         
 
         // Rotate player
-        c.translate(this.x + (this.width), this.y + (this.height));
-        c.rotate(degree * Math.PI/180);
-        c.translate(-this.x -(this.width/2), -this.y -this.height/2);
+       // c.translate(this.x + (this.width), this.y + (this.height));
+        
+       // c.translate(-this.x -(this.width/2), -this.y -this.height/2);
         var health_left=(this.health/player_health);
-        c.fillStyle="blue"
-        //c.fillRect( this.x, this.y+this.height, this.width*health_left, this.height/10 );
+        c.fillStyle="white"
+        c.fillRect( this.x+this.width/2, this.y+this.height*1.5, this.width*health_left, this.height/15 );
         c.lineWidth=0.5;
 
-
-        //c.fillStyle = this.color;
-        c.fillStyle="red"
-        c.lineWidth = 0.5;
+        c.rotate(degree * Math.PI/180);
+        
         //c.rect(this.x, this.y, this.width, this.height);
-        tank1Pos.x =this.x;
-        tank1Pos.y=this.y;
+        tank1Pos.x =this.x+this.width/2;
+        tank1Pos.y=this.y+this.height/2;
         tank1.style.left=this.x+this.width/2;
-        tank1.style.top=this.y+this.height*1.25;
+        tank1.style.top=this.y+this.height/2.5;
 
         c.stroke();
        // c.fill();
@@ -242,7 +286,7 @@ class Player{
     }
     shoot(){
        
-        var bullet = new Bullets(this.x + this.width*0.95, this.y + this.height*0.73,bullet_width,bullet_height,degree  ,"red");
+        var bullet = new Bullets(this.x + this.width, this.y + this.height*0.9,bullet_width,bullet_height,degree  ,"black");
         bullets.push(bullet);
     
         }
@@ -271,20 +315,26 @@ class Bullets{
       update(){
         c.beginPath();
         c.save();
-        c.fillStyle = this.color;
-        c.translate(this.x + (this.width), this.y + (this.height));
-        c.rotate(this.angle * Math.PI/180);
-        c.translate(-this.x -(this.width/2), -this.y -this.height/2);
+        //c.fillStyle = this.color;
+        //c.translate(this.x + (this.width), this.y + (this.height));
+       // c.rotate(this.angle * Math.PI/180);
         
+        
+      //  c.translate(-this.x -(this.width/2), -this.y -this.height/2);
+      //  
+        c.beginPath();
+      c.arc(this.x, this.y, 2, 0, 2 * Math.PI, false);
+      c.fillStyle = 'black';
+      c.fill();
         c.font = "30px Arial";
-        c.fillStyle = this.color;
+      //  c.fillStyle = this.color;
         //c.textAlign = "center";
         //c.lineWidth=1;
-        c.rect(this.x, this.y, this.width, this.height);
+      //  c.rect(this.x, this.y, this.width, this.height);
        // c.fillText("&uarr;", this.x, this.y);
-        c.fill();
-        c.stroke();
-        c.restore();
+      //  c.fill();
+       // c.stroke();
+      //  c.restore();
         c.closePath();
     // Bullet movement
     this.x += this.speed * Math.sin( this.angle * Math.PI/180 );
@@ -300,13 +350,14 @@ class Bullets{
 //GAMELOOP();
 
 class Enemy{
-  constructor(x, y, width, height, speed,health){
+  constructor(x, y, width, height, speed,health,id){
   this.x = x;
   this.y = y;
   this.width = width;
   this.height = height;
   this.speed = speed;
   this.health=health;
+  this.id = id;
   }
   
   update(){
@@ -331,7 +382,7 @@ class Enemy{
     c.lineWidth=1;
     //c.rect(this.x, this.y, this.width, this.height/5);
     var health_left=(this.health/5);
-    c.fillStyle="lime"
+    c.fillStyle="brown"
     c.fillRect( this.x, this.y, this.width*health_left, this.height/10 );
     c.lineWidth=0.5;
     //c.rect(this.x+this.width/2, this.y+this.height/2, this.width, this.height);
@@ -339,8 +390,14 @@ class Enemy{
     c.stroke();
     c.restore();
     c.closePath();
-    c.drawImage(enemyImg, this.x, this.y,this.width,this.height);
-  
+    
+    
+  //  console.log(str);
+   
+   
+   // c.drawImage(enemyImg, this.x, this.y,this.width,this.height);
+  aliens[this.id].style.left = this.x;
+  aliens[this.id].style.top = this.y;  
   
 }
 }
@@ -356,14 +413,20 @@ function collision(a,b){
 
 //draw n enemies into enemies array
 function drawEnemies(){
+	
   for (var _ = 0; _<10; _++){ 
+     
+    aliens[_] = document.getElementById("car"+(_+1));
+    aliens[_].style.visibility = "visible";
     var x = Math.random()*(innerWidth-enemy_width);
     var y = Math.random()*(innerWidth-enemy_height);
     var width = enemy_width;
     var height = enemy_height;
     var speed = Math.random()*0.5;
     var health=enemy_health;
-    var enemy = new Enemy(x, y, width, height, speed,health);
+    var id = _;
+    var enemy = new Enemy(x, y, width, height, speed,health,id);
+       
     enemies.push(enemy); 
   }
 }
@@ -371,8 +434,10 @@ function drawEnemies(){
 function  playerHeathDetection(){
       for (var i=enemies.length-1;i>=0;i--){
                       if(collision(player,enemies[i])){
-                        player.health=player.health>0?player.health-0.1:player_health;
-                        points-=1;
+                        player.health=player.health>0?player.health-0.5:player_health;
+                        if(player.health <1){
+                        	points = 0;
+                        }
                         
                       }
 
@@ -388,7 +453,11 @@ function  playerHeathDetection(){
                           enemies[j].health-=1;
                           bullets.splice(i,1);
                       if(enemies[j].health<1){
+                        aliens[enemies[j].id].style.visibility = "hidden";
                           enemies.splice(j,1);
+                          
+                        
+                        
                       }
                   
                 
@@ -410,9 +479,9 @@ function  playerHeathDetection(){
 
   //c.font = "20px ";
 
-  c.font = "bold 15pt Courier";
+  c.font = "bold 20pt Courier";
 
-  c.fillStyle="black";
+  c.fillStyle="Black";
   c.fillText("🅂🄲🄾🅁🄴 :"+points,10,30);
   c.restore();
   c.closePath();
@@ -422,6 +491,7 @@ function GAMELOOP(currentTime){
 
   window.requestAnimationFrame(GAMELOOP);
   c.clearRect(0, 0, canvas.width, canvas.height);
+    
    
   if(enemies.length==0){
      drawEnemies();
@@ -455,7 +525,7 @@ function GAMELOOP(currentTime){
    if(currentTime >= lastTime + 500){
   
       //lastTime = currentTime;
-      player.health=player.health<player_health?player.health+10:player_health;
+      player.health=player.health<player_health?player.health+3:player_health;
       lastTime = currentTime;
 
      
@@ -478,16 +548,50 @@ function GAMELOOP(currentTime){
 
 
   });
+  
+  
+  
 </script>
+<script>
+    var btn = document.getElementById("myBtn");
+btn.addEventListener("click", start);
+    
+    function start() {
+    music = new Audio();
+    music.src = "https://upload.wikimedia.org/wikipedia/commons/e/e5/Tetris_theme.ogg";
+    music.play();
+    music.loop = true;
+  
+    btn.style.visibility = "hidden";
+};
 
+  
+</script>
 <style >
-
+html,body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    position: fixed;
+    user-select: none;
+}
 body {
     position: fixed;
     margin: 0;
     user-select: none;
+  
     -webkit-user-select: none;
+
+  background-color:gray;
+  
 }
+  ::-webkit-scrollbar {
+    width: 0;
+}
+  
+  #mybtn{position: absolute;right:0%;}
+
+
 .pads {
     position: fixed;
     border-radius: 50%;
@@ -496,33 +600,38 @@ body {
     -khtml-user-select: none;
     -webkit-user-select: none;
     -o-user-select: none;
-}
+    }
 
-#touchPad{
-    border: 3px solid black;
-    
-    width:100px;
-    height:100px;
-    opacity:0.3;
+    #touchPad{
+    border: 4px solid black;
+    right: 0%;
+    width:150px;
+    height:150px;
+    bottom: 0%;
+    opacity:0.6;
     background-color:gray;
-    
-}
+  
+    }
 
-#padDot{
-    border: 3px solid black;
-    display:none;
-    width:25px;
-    height:25px;
-    
-    opacity:0.5;
+    #padDot{
+    border: 4px solid black;
+    right: 0%;
+    width:50px;
+    height:50px;
+    bottom: 0%;
+    opacity:0.9;
     background-color: #f2f2f2;
+    display:none;
     
-    
-}
-
-
+    }
 
 #tank1{
+width:30px;
+height:50px;
+    
+    position:absolute;
+}
+  #car1,#car2,#car3,#car4,#car5,#car6,#car7,#car8,#car9,#car10{
 width:30px;
 height:50px;
     
