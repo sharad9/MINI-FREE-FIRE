@@ -1,0 +1,509 @@
+<html oncontextmenu="return false">
+    <head>
+       
+        <title></title>
+    </head>
+    <body>
+      <button id="myBtn"><strong>Music</strong></button>
+      
+    <meta name="viewport"
+  content="
+    height = device-height,
+    width = device-width,
+    initial-scale = 1.0,
+    minimum-scale = 1.0,
+    maximum-scale = 1.0,
+    user-scalable = no,
+    target-densitydpi = device-dpi
+    " />
+ <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, width=device-width">
+    
+      
+    <div class="pads" id="touchPadFire"></div>
+
+        
+        <canvas id="canvas"></canvas>
+        
+        <img id="tank1" src="https://i.ibb.co/LRFsjhy/Clipart-Key-1708882.png">
+     
+        <script src="Joystick.js"></script>>
+     
+        <!-- Opponent Car -->
+        
+        <div id="oponent-car">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car1">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car2">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car3">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car4">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car5">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car6">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car7">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car8">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car9">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car10">
+            
+        </div>
+   
+
+
+
+<script>
+"use-strict";
+window.addEventListener('load', function(){
+	Joystick();
+    document.onkeydown = function (e) { 
+            if (event.keyCode == 123) { 
+                return false; 
+            } 
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { 
+                return false; 
+            } 
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { 
+                return false; 
+            } 
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { 
+                return false; 
+            } 
+            if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { 
+                return false; 
+            } 
+        } 
+    var log = console.log;
+    
+    
+    var enemies = []; 
+    var enemyImg = new Image();
+    enemyImg.src ="https://image.ibb.co/gi6ZpU/ufo.png";   
+    var aliens  = [];
+  	
+  
+    var enemy_width = 30;
+    var enemy_height = 30;
+    var enemy_health=5;
+    
+    var lastTime=0;
+    var bullet_width=3,bullet_height=8;
+    var bullets=[];
+    
+
+ 
+    var tank1 = document.getElementById('tank1');
+    
+   
+    var points=0;
+
+
+   
+
+
+    var player; 
+    var player_health=100;
+    var playerSpeed = 3;      
+    var move=false;
+    var fire=false;
+    var tank1Pos={x:0,y:0};               
+    
+    var canvas = id("canvas");
+	var c = canvas.getContext("2d");
+
+	canvas.width = window.innerWidth-10;
+	canvas.height = window.innerHeight-10;
+
+  
+function id(arg){
+  return document.getElementById(arg);
+} 
+ 
+ 
+
+class Player{
+    constructor(x, y, width, height,health){
+
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        
+        this.health = health;
+    }
+
+    update(){
+    	c.beginPath();
+        c.save();
+        
+        
+        tank1.style.transform = "rotate("+(stick.degree)+"deg)";
+        
+
+       
+        let health_left=(this.health/player_health);
+        c.fillStyle="white"
+        c.fillRect( this.x+this.width/2, this.y+this.height*1.5, this.width*health_left, this.height/15 );
+        c.lineWidth=0.5;
+        c.rotate(stick.degree * Math.PI/180);
+      
+        
+        
+        
+        tank1Pos.x =this.x+this.width/2;
+        tank1Pos.y=this.y+this.height/2;
+        tank1.style.left=this.x+this.width/2;
+        tank1.style.top=this.y+this.height/2.5;
+
+        c.stroke();
+      
+        c.restore();
+        c.closePath();
+      
+    
+        if(this.x + this.width*2 > canvas.width) this.x = canvas.width - this.width*2; 
+        if(this.x < 0) this.x = 0;
+        if(this.y + this.height*2 > canvas.height) this.y = canvas.height - this.height*2; 
+        if(this.y < 0) this.y = 0; 
+        
+        
+    
+        this.x += stick.dx*playerSpeed;
+        this.y += stick.dy*playerSpeed;
+    	if(!(stick.dx == 0 && stick.dy==0)){
+    		fire = true;
+    	}else{
+    		fire = false;
+    	}	
+        
+    
+    }
+    shoot(){
+       
+        var bullet = new Bullets(this.x + this.width, this.y + this.height*0.9,bullet_width,bullet_height,stick.degree,"black");
+        bullets.push(bullet);
+    
+        }
+
+}
+
+
+class Bullets{
+      constructor(x, y,width,height, angle, color){
+        this.x = x;
+        this.y = y;
+        this.width=width;
+        this.height=height;
+        this.speed = 7;
+        this.angle = angle; 
+        this.color =color;
+      }  
+    
+      update(){
+        c.beginPath();
+        c.save();
+       
+        c.beginPath();
+      	c.arc(this.x, this.y, 2, 0, 2 * Math.PI, false);
+      	c.fillStyle = 'black';
+      	c.fill();
+        c.font = "30px Arial";
+        c.closePath();
+    	this.x += this.speed * Math.sin( this.angle * Math.PI/180 );
+    	this.y += this.speed *( -Math.cos( this.angle * Math.PI/180 ));
+     }
+
+
+}
+
+
+var player = new Player(window.innerWidth/2, window.innerHeight/2, tank1.width, tank1.height,player_health);
+
+
+
+class Enemy{
+  constructor(x, y, width, height, speed,health,id){
+  	this.x = x;
+  	this.y = y;
+  	this.width = width;
+  	this.height = height;
+  	this.speed = speed;
+  	this.health=health;
+  	this.id = id;
+  }
+  
+  update(){
+    
+   
+    if(this.x<tank1Pos.x){
+        this.x+= this.speed;
+
+    }if(this.x>tank1Pos.x){
+        this.x-= this.speed;
+
+    }if(this.y>tank1Pos.y){
+        this.y-= this.speed;
+
+    }if(this.y<tank1Pos.y){
+        this.y+= this.speed;
+    }
+  
+  
+    c.beginPath();
+    c.save();
+    
+    c.lineWidth=1;
+    
+    var health_left=(this.health/5);
+    c.fillStyle="brown"
+    c.fillRect( this.x, this.y, this.width*health_left, this.height/10 );
+    c.lineWidth=0.5;
+    
+    c.stroke();
+    c.restore();
+    c.closePath();
+    
+  	aliens[this.id].style.left = this.x;
+  	aliens[this.id].style.top = this.y;  
+  
+}
+}
+
+
+function collision(a,b){
+  return a.x < b.x + b.width &&
+         a.x + a.width > b.x &&
+         a.y < b.y + b.height &&
+         a.y + a.height > b.y;
+}
+
+
+
+function drawEnemies(){
+	
+  for (var _ = 0; _<10; _++){ 
+     
+    aliens[_] = document.getElementById("car"+(_+1));
+    aliens[_].style.visibility = "visible";
+    var x = Math.random()*(innerWidth-enemy_width);
+    var y = Math.random()*(innerWidth-enemy_height);
+    var width = enemy_width;
+    var height = enemy_height;
+    var speed = Math.random()*0.5;
+    var health=enemy_health;
+    var id = _;
+    var enemy = new Enemy(x, y, width, height, speed,health,id);
+       
+    enemies.push(enemy); 
+  }
+}
+
+function  playerHeathDetection(){
+      for (var i=enemies.length-1;i>=0;i--){
+                      if(collision(player,enemies[i])){
+                        player.health=player.health>0?player.health-0.5:player_health;
+                        if(player.health <1){
+                        	points = 0;
+                        }
+                        
+                      }
+
+       }
+}    
+ function targetDeathDetection(){
+        for (var i =bullets.length - 1; i >= 0; i--) {
+            for (var j=enemies.length-1;j>=0;j--){
+
+                    try {
+                      if(collision(bullets[i],enemies[j])){
+                          points+=5;
+                          enemies[j].health-=1;
+                          bullets.splice(i,1);
+                      if(enemies[j].health<1){
+                        aliens[enemies[j].id].style.visibility = "hidden";
+                          enemies.splice(j,1);
+                          
+                        
+                        
+                      }
+                  
+                
+                      }
+                    }
+                    catch (e) {
+ 
+                    }
+                
+            }
+            
+        }
+ }
+ 
+
+ function score(){
+  c.beginPath();
+  c.save();
+
+  
+
+  c.font = "bold 20pt Courier";
+
+  c.fillStyle="Black";
+  c.fillText("🅂🄲🄾🅁🄴 :"+points,10,30);
+  c.restore();
+  c.closePath();
+ }
+
+function GAMELOOP(currentTime){
+
+  window.requestAnimationFrame(GAMELOOP);
+  c.clearRect(0, 0, canvas.width, canvas.height);
+    
+   
+  if(enemies.length==0){
+     drawEnemies();
+
+  }
+
+
+  for (var i = bullets.length - 1; i >= 0; i--){
+    bullets[i].update();
+    if (bullets[i].x < 0 || bullets[i].x > canvas.width || bullets[i].y > canvas.height || bullets[i].y < 0){
+      bullets.splice(i, 1);
+    }
+  }
+  
+   player.update();
+   
+  
+  
+  if(fire==true){
+    if(currentTime >= lastTime + 150){
+  
+      lastTime = currentTime;
+      player.shoot();
+      
+
+     
+  }    
+    }
+
+
+   if(currentTime >= lastTime + 500){
+  
+      //lastTime = currentTime;
+      player.health=player.health<player_health?player.health+3:player_health;
+      lastTime = currentTime;
+
+     
+  }  
+
+    
+
+  for(var x=enemies.length-1;x>=0;x--){
+      enemies[x].update();
+  }
+ 
+  	  targetDeathDetection();
+  	  playerHeathDetection();  
+  	  score();
+  
+  
+};
+  
+    GAMELOOP ();
+
+
+  });
+  
+  
+  
+</script>
+<script>
+    var btn = document.getElementById("myBtn");
+btn.addEventListener("click", start);
+    
+    function start() {
+    music = new Audio();
+    music.src = "https://upload.wikimedia.org/wikipedia/commons/e/e5/Tetris_theme.ogg";
+    music.play();
+    music.loop = true;
+  
+    btn.style.visibility = "hidden";
+};
+
+  
+</script>
+<style >
+html,body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    position: fixed;
+    user-select: none;
+}
+body {
+    position: fixed;
+    margin: 0;
+    user-select: none;
+  
+    -webkit-user-select: none;
+
+  background-color:gray;
+  
+}
+  ::-webkit-scrollbar {
+    width: 0;
+}
+  
+  #mybtn{position: absolute;right:0%;}
+
+
+.pads {
+    position: fixed;
+    border-radius: 50%;
+       user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+    }
+
+    #touchPad{
+    border: 4px solid black;
+    right: 0%;
+    width:150px;
+    height:150px;
+    bottom: 0%;
+    opacity:0.6;
+    background-color:gray;
+  
+    }
+
+    #padDot{
+    border: 4px solid black;
+    right: 0%;
+    width:50px;
+    height:50px;
+    bottom: 0%;
+    opacity:0.9;
+    background-color: #f2f2f2;
+    display:none;
+    
+    }
+
+#tank1{
+width:30px;
+height:50px;
+    
+    position:absolute;
+}
+  #car1,#car2,#car3,#car4,#car5,#car6,#car7,#car8,#car9,#car10{
+width:30px;
+height:50px;
+    
+    position:absolute;
+}
+  #navbar-iframe-container{
+   display: none;
+}
+
+    
+</style>
+ </body>
+</html>
