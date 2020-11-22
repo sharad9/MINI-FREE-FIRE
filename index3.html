@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html oncontextmenu="return false;">
+    <head>
+      <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, width=device-width">
+        <title>Crazy Car [ Game ]</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	 <link rel="stylesheet" href="style.css">
+
+    <script src="script.js"></script>
+     </head>
+    <body>
+    
+        <!-- My Car -->
+    
+        <div id="car">
+            <img id="my_car"  src="https://assets.cvnaassets.com/home-assets/top-down_car.png">
+        </div>
+        
+        <!-- Opponent Car -->
+        
+        <div id="oponent-car">
+            <img src="https://i.ibb.co/LRFsjhy/Clipart-Key-1708882.png" id="car1">
+            <img src="https://i.ibb.co/LRFsjhy/Clipart-Key-1708882.png" id="car2">
+            <img src="https://i.ibb.co/LRFsjhy/Clipart-Key-1708882.png" id="car3">
+            <img src="https://i.ibb.co/LRFsjhy/Clipart-Key-1708882.png" id="car4">
+            <img src="https://i.ibb.co/LRFsjhy/Clipart-Key-1708882.png" id="car5">
+            <img src="https://i.ibb.co/LRFsjhy/Clipart-Key-1708882.png" id="car6">
+            <img src="https://i.ibb.co/LRFsjhy/Clipart-Key-1708882.png" id="car7">
+            <img src="https://i.ibb.co/LRFsjhy/Clipart-Key-1708882.png" id="car8">
+            
+        </div>
+        
+        <!-- Road -->
+        
+        
+        <div id="road">
+            <div class="line_1" id="line_1"></div>
+            <div class="line_2" id="line_2"></div>
+            <div class="line_3" id="line_3"></div>
+            <div class="line_4" id="line_4"></div>
+            
+        </div>
+        
+        <!-- Score -->
+        
+        <div class="score">
+            <p class="scoreText">Score : <span id="score">0</span></p>
+        </div>
+        
+        <!-- Splash Screen -->
+        
+        <div id="splash_screen">
+            <h2>CRAZY CAR<sup>V1.0</sup></h2>
+            <button class="btn" id="start_game">Start</button>
+           
+          
+        </div>
+        
+        <!-- Timer -->
+        
+        
+        <p id="timer">1</p>
+        
+        <!-- https://dl-web.dropbox.com/s/9smc0vzt2oe6jfl/Ping%20Pong%20music%202.mp3?dl=0 -->
+        
+        <button id="rstart">RESTART</button>
+     
+       <audio id="Clip">
+        <source
+          src="https://upload.wikimedia.org/wikipedia/commons/e/e5/Tetris_theme.ogg";
+          type="audio/mpeg"
+        />
+      </audio>
+        
+    </body>
+  <style>
+
+html,body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    position: fixed;
+    user-select: none;
+}
+
+::-webkit-scrollbar {
+    width: 0;
+}
+#car
+{
+    position: absolute;
+    top: 444px;
+    left: 155px;
+
+}
+#oponent-car
+{
+    overflow: hidden;
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    z-index: 999;
+
+}
+#my_car
+{
+    height: 50px;
+    width: 25px;
+    transform: rotate(-180deg);
+    position: absolute;
+    z-index: 100;
+   
+}
+#road
+{
+    height: 100vh;
+    width: 100vw;
+    background: #262626;
+    position: absolute;
+    overflow: hidden;
+    z-index: 10;
+}
+.line_1,.line_2,.line_3,.line_4
+{
+    height: 120px;
+    width: 13px;
+    background: #aaa;
+    position: absolute;
+    z-index: 0;
+}
+.line_1
+{
+    top: -120px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.line_2
+{
+    top: 158.8px;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    //display: none;
+}
+.line_3
+{
+    top: 318.6px;
+    left: 50%;
+    transform: translateX(-50%);
+    //display: none;
+}
+.line_4
+{
+    bottom: -120px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#car1,#car2,#car3,#car4,#car5,#car6,#car7,#car8
+{
+    height: 50px;
+    width: 25px;
+    position: absolute;
+    
+    
+}
+#car1
+{
+    top: 80px;
+    left: 80px;
+}
+#car2
+{
+    top: 250px;
+    left: 190px;
+}
+#car3
+{
+    top: 20px;
+    left: 300px;
+}
+#car4
+{
+    top: 200px;
+    left : 99px;
+}
+#car5
+{
+    top: 280px;
+    left: 180px;
+}
+#car6
+{
+    top: 255px;
+    left: 190px;
+}
+#car7
+{
+    top: 25px;
+    left: 350px;
+}
+#car8
+{
+    top: 250px;
+    left : 99px;
+}
+#car1.hide
+{
+    opacity: 0;
+    transition: .3s;
+}
+#car2.hide
+{
+    opacity: 0;
+    transition: .3s;
+}
+#car3.hide
+{
+    opacity: 0;
+    transition: .3s;
+    
+}
+#car4.hide
+{
+    opacity: 0;
+    transition: .3s;
+}
+
+.score
+{
+    position: absolute;
+    z-index: 500;
+    height: 35px;
+    width: 80px;
+    background: rgba(0,0,0,0.5);
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+}
+.scoreText
+{
+    margin: 0;
+    padding: 0;
+    text-transform: uppercase;
+    font-size: 8pt;
+}
+#splash_screen
+{
+    height: 100vh;
+    width: 100vw;
+    background: rgba(0,0,0,0.6);
+    position: absolute;
+    z-index: 5000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: .5s;
+}
+#splash_screen.hide
+{
+    opacity: 0;
+}
+.btn
+{
+    height: 70px;
+    width: 120px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid #fff;
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 18pt;
+    cursor: pointer;
+    margin: 0 5px 0 5px;
+}
+button:focus
+{
+    outline: none;
+}
+h2
+{
+    position: absolute;
+    color: #fff;
+    width: 100%;
+    text-align: center;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 0;
+    font-size: 25pt;
+    font-weight: bold;
+    font-style: italic;
+}
+sup
+{
+    font-size: 10pt;
+    margin: 0;
+    padding: 0;
+}
+#copy
+{
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    font-size: 10pt;
+    bottom: 12px;
+}
+#timer
+{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    color: #fff;
+    font-size: 35pt;
+    font-weight: bold;
+    z-index: 4000;
+    display: none;
+}
+#rstart
+{
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    height: 35px;
+    width: 100px;
+    background: #3f3675;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    z-index: 6000;
+}
+ #navbar-iframe-container{
+   display: none;
+}
+
+  </style>
+  <script>
+let posX = (window.innerWidth / 2) - 25;
+let posY = window.innerHeight /1.5;
+let speed = 10;
+let scores = 0;
+let carHeight = 45;//160
+let carWidth = 20;//70
+let game_over = false;
+let game_re_start = false;
+let handle_speed = 4;
+let time;
+
+
+// oponent cars
+
+let opCarX_1 = Math.floor(Math.random() * (window.innerWidth - 50));
+let opCarX_2 = Math.floor(Math.random() * (window.innerWidth - 50));
+let opCarX_3 = Math.floor(Math.random() * (window.innerWidth - 50));
+let opCarX_4 = Math.floor(Math.random() *  (window.innerWidth - 50));
+
+let opCarX_5 = Math.floor(Math.random() * (window.innerWidth - 50));
+let opCarX_6 = Math.floor(Math.random() * (window.innerWidth - 50));
+let opCarX_7 = Math.floor(Math.random() * (window.innerWidth - 50));
+let opCarX_8 = Math.floor(Math.random() *  (window.innerWidth - 50));
+
+let opCarY_1 = 80;
+let opCarY_2 = 250;
+let opCarY_3 = 20;
+let opCarY_4 = 200;
+let opCarY_5 = 80;
+let opCarY_6 = 250;
+let opCarY_7 = 20;
+let opCarY_8 = 200;
+
+// Road line
+
+let line_pos_1 = -120;
+let line_pos_2 = 158.8;
+let line_pos_3 = 318.6;
+let line_pos_4 = -120;
+let line_speed = 5;
+
+
+window.onload = function () {
+  
+   document.onkeydown = function (e) { 
+            if (event.keyCode == 123) { 
+                return false; 
+            } 
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { 
+                return false; 
+            } 
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { 
+                return false; 
+            } 
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { 
+                return false; 
+            } 
+            if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { 
+                return false; 
+            } 
+        } 
+    
+   
+    
+    canvas = document.getElementById("oponent-car");
+
+    
+    start_game.addEventListener('click', () => {
+        soundTrue();
+        splash_screen.classList.add('hide');
+        setTimeout(() => {
+            splash_screen.style.display = 'none';
+        }, 500);
+        setTimeout(() => {
+            timer.innerText = '2';
+            setTimeout(() => {
+                timer.innerText = '3';
+                setTimeout(() => {
+                    timer.style.display = 'none';
+                }, 1000);
+            }, 1000);
+        }, 1000);
+        animStart();
+        timer.style.display = 'block';
+       
+    });
+    
+    
+
+    document.addEventListener('touchmove', e => {
+     let x = Math.floor(e.touches[0].clientX) - 25;
+      x = x<50?50:x;   
+      x = x<850 ? x: 850;
+
+        posX = x;
+       // posY = y;
+      
+    });
+
+    var playClip = document.getElementById("Clip");
+    function soundTrue(){
+
+    playClip.play();
+      playClip.loop = true;
+    playClip.volume = 1;
+      
+   
+    
+}
+
+    rstart.addEventListener('click', () => {
+        soundTrue();
+        car1.classList.remove('hide');
+        car2.classList.remove('hide');
+        car3.classList.remove('hide');
+        car4.classList.remove('hide');
+        car5.classList.remove('hide');
+        car6.classList.remove('hide');
+        car7.classList.remove('hide');
+        car8.classList.remove('hide');
+
+        road.style.display = 'block';
+        my_car.style.display = 'inline';
+        setInterval(setScore, 1000);
+        rstart.style.display = 'none';
+        opCarX_1 = Math.floor(Math.random() * (window.innerWidth - 50));
+        opCarX_2 = Math.floor(Math.random() * (window.innerWidth - 50));
+        opCarX_3 = Math.floor(Math.random() * (window.innerWidth - 50));
+        opCarX_4 = Math.floor(Math.random() *  (window.innerWidth - 50));
+	opCarX_5 = Math.floor(Math.random() * (window.innerWidth - 50));
+        opCarX_6 = Math.floor(Math.random() * (window.innerWidth - 50));
+        opCarX_7 = Math.floor(Math.random() * (window.innerWidth - 50));
+        opCarX_8 = Math.floor(Math.random() *  (window.innerWidth - 50));
+        game_over = false;
+        posX = (window.innerWidth / 2) - 100;
+        posY = window.innerHeight /1.5;;
+        scores = 0;
+        score.innerText = scores;
+        opCarY_1 = -100;
+        opCarY_2 = -100;
+        opCarY_3 = -100;
+        opCarY_4 = -100;
+	opCarY_5 = -100;
+        opCarY_6 = -100;
+        opCarY_7 = -100;
+        opCarY_8 = -100;
+        game_re_start = true;
+        document.addEventListener('touchstart', e => {
+        game_re_start = false;
+        });
+    });
+
+}
+
+
+function setScore(){
+    if (game_over == false){
+        scores++;
+    }
+    score.innerText = scores;
+}
+
+function opCarAnim_1(){
+    if (opCarY_1 < window.innerHeight){
+        if (game_over == false){
+            opCarY_1 += 4.5;
+        }
+        
+        
+    }
+    else
+    {
+        opCarY_1 = -100;
+        opCarX_1 = Math.floor(Math.random() * (window.innerWidth - 50));
+    }
+    car1.style.top = opCarY_1 + 'px';
+    car1.style.left = opCarX_1 + 'px';
+    requestAnimationFrame(opCarAnim_1);
+}
+
+function opCarAnim_2(){
+    if (opCarY_2 < window.innerHeight){
+        if (game_over == false){
+            opCarY_2 += 3;
+        }
+    }
+    else
+    {
+        opCarY_2 = -100;
+        opCarX_2 = Math.floor(Math.random() * (window.innerWidth - 50));
+    }
+    car2.style.top = opCarY_2 + 'px';
+    car2.style.left = opCarX_2 + 'px';
+    requestAnimationFrame(opCarAnim_2);
+}
+
+function opCarAnim_3(){
+    if (opCarY_3 < window.innerHeight){
+        if (game_over == false){
+            opCarY_3 += 3.5;
+        }
+    }
+    else
+    {
+        opCarY_3 = -100;
+        opCarX_3 = Math.floor(Math.random() * (window.innerWidth - 50));
+    }
+    car3.style.top = opCarY_3 + 'px';
+    car3.style.left = opCarX_3 + 'px';
+    requestAnimationFrame(opCarAnim_3);
+}
+
+function opCarAnim_4(){
+    if (opCarY_4 < window.innerHeight){
+        if (game_over == false){
+            opCarY_4 += 4;
+        }
+        
+    }
+    else
+    {
+        opCarY_4 = -100;
+        opCarX_4 = Math.floor(Math.random() * (window.innerWidth - 50));
+    }
+    car4.style.top = opCarY_4 + 'px';
+    car4.style.left = opCarX_4 + 'px';
+    requestAnimationFrame(opCarAnim_4);
+}
+function opCarAnim_5(){
+    if (opCarY_5 < window.innerHeight){
+        if (game_over == false){
+            opCarY_5 += 5;
+        }
+        
+    }
+    else
+    {
+        opCarY_5 = -100;
+        opCarX_5 = Math.floor(Math.random() * (window.innerWidth - 50));
+    }
+    car5.style.top = opCarY_5 + 'px';
+    car5.style.left = opCarX_5 + 'px';
+    requestAnimationFrame(opCarAnim_5);
+}
+
+function opCarAnim_6(){
+    if (opCarY_6 < window.innerHeight){
+        if (game_over == false){
+            opCarY_6 += 5.5;
+        }
+        
+    }
+    else
+    {
+        opCarY_6 = -100;
+        opCarX_6 = Math.floor(Math.random() * (window.innerWidth - 50));
+    }
+    car6.style.top = opCarY_6 + 'px';
+    car6.style.left = opCarX_6 + 'px';
+    requestAnimationFrame(opCarAnim_6);
+}
+
+function opCarAnim_7(){
+    if (opCarY_7 < window.innerHeight){
+        if (game_over == false){
+            opCarY_7 += 4.5;
+        }
+        
+    }
+    else
+    {
+        opCarY_7 = -100;
+        opCarX_7 = Math.floor(Math.random() * (window.innerWidth - 50));
+    }
+    car7.style.top = opCarY_7 + 'px';
+    car7.style.left = opCarX_7 + 'px';
+    requestAnimationFrame(opCarAnim_7);
+}
+
+function opCarAnim_8(){
+    if (opCarY_8 < window.innerHeight){
+        if (game_over == false){
+            opCarY_8 += 6.5;
+        }
+        
+    }
+    else
+    {
+        opCarY_8 = -100;
+        opCarX_8 = Math.floor(Math.random() * (window.innerWidth - 50));
+    }
+    car8.style.top = opCarY_8 + 'px';
+    car8.style.left = opCarX_8 + 'px';
+    requestAnimationFrame(opCarAnim_8);
+}
+
+
+
+
+function frame1(){
+    if (line_pos_1 < window.innerHeight){
+        line_pos_1 += line_speed;
+        line_1.style.top = line_pos_1 + 'px';
+    }
+    else
+    {
+        line_pos_1 = -150;
+        line_1.style.top = line_pos_1 + 'px';
+    }
+    requestAnimationFrame(frame1);
+}
+
+function frame2(){
+    if (line_pos_2 < window.innerHeight){
+        line_pos_2 += line_speed;
+        line_2.style.top = line_pos_2 + 'px';
+    }
+    else
+    {
+        line_pos_2 = -150;
+        line_2.style.top = line_pos_2 + 'px';
+    }
+    requestAnimationFrame(frame2);
+}
+
+function frame3(){
+    if (line_pos_3 < window.innerHeight){
+        line_pos_3 += line_speed;
+        line_3.style.top = line_pos_3 + 'px';
+    }
+    else
+    {
+        line_pos_3 = -150;
+        line_3.style.top = line_pos_3 + 'px';
+    }
+    requestAnimationFrame(frame3);
+}
+
+function frame4(){
+    if (line_pos_4 < window.innerHeight){
+        line_pos_4 = window.innerHeight;
+        line_4.style.bottom = line_pos_4 + 'px';
+    }
+    else
+    {
+        line_pos_4 += line_speed;
+        line_4.style.bottom = line_pos_4 + 'px';
+    }
+    
+    requestAnimationFrame(frame4);
+}
+
+
+function collision(opCarX, opCarY){
+        let x = posX;
+        let y = posY;
+        let objHeight = carHeight;
+        let objWidth = carWidth;
+        let x1 = opCarX;
+        let y1 = opCarY;
+        let opHeight = carHeight;
+        let opWidth = carWidth;
+        var closeOnWidth=Math.abs(x-x1)<=Math.max(objWidth,opWidth);
+        var closeOnHeight=Math.abs(y-y1)<=Math.max(objHeight,opHeight);
+        if (closeOnWidth&&closeOnHeight) {
+            road.style.display = 'none';
+        my_car.style.display = 'none';
+        clearInterval(time);
+        rstart.style.display = 'block';
+        game_over = true;
+        }
+        
+        //return closeOnWidth&&closeOnHeight;
+    }; 
+
+
+function anim(){
+     speed += 0.001;
+    if (posY > 0){
+   
+        
+        collision(opCarX_1, opCarY_1);
+        collision(opCarX_2, opCarY_2);
+        collision(opCarX_3, opCarY_3);
+        collision(opCarX_4, opCarY_4);
+        collision(opCarX_5, opCarY_5);
+        collision(opCarX_6, opCarY_6);
+        collision(opCarX_7, opCarY_7);
+        collision(opCarX_8, opCarY_8);
+        
+    }
+    
+    car.style.top = posY + 'px';
+    car.style.left = posX + 'px';
+    requestAnimationFrame(anim);
+}
+
+
+function animStart(){
+    setTimeout(() => {
+    anim();
+    frame1();
+    frame2();
+    frame3();
+    frame4();
+     // opnent car
+    
+    opCarAnim_1();
+    opCarAnim_2();
+    opCarAnim_3();
+    opCarAnim_4();
+    opCarAnim_5();
+    opCarAnim_6();
+    opCarAnim_7();
+    opCarAnim_8();
+    
+    }, 50);
+}
+
+
+
+
+
+  </script>
+</html>
