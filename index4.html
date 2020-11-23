@@ -1,0 +1,732 @@
+<html oncontextmenu="return false">
+    <head>
+       
+        <title></title>
+    </head>
+    <body>
+        
+      <button id="myBtn"><strong>Music</strong></button>
+      
+    <meta name="viewport"
+  content="
+    height = device-height,
+    width = device-width,
+    initial-scale = 1.0,
+    minimum-scale = 1.0,
+    maximum-scale = 1.0,
+    user-scalable = no,
+    target-densitydpi = device-dpi
+    " />
+ <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, width=device-width">
+    
+      
+    <div class="pads" id="touchPadFire"></div>
+
+        
+        <canvas id="canvas"></canvas>
+        
+        <img id="tank1" src="https://i.ibb.co/LRFsjhy/Clipart-Key-1708882.png">
+     
+     
+        <!-- Opponent Car -->
+        
+        <div id="oponent-car">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car1">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car2">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car3">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car4">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car5">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car6">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car7">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car8">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car9">
+            <img src=" https://assets.cvnaassets.com/home-assets/top-down_car.png" id="car10">
+            
+        </div>
+   
+<script>
+"use-strict";
+class create_joystick {
+    // front=null;back=null;touch=null;r=0;c=0;R=0;C=0;
+    constructor(on_action, touch, front, back) {
+        this.on_action = on_action || {
+            x:0,
+            y:0,
+            dx: 0,
+            dy: 0,
+            degree: 0
+
+        };
+        this.touch = touch || {
+            on: false
+        };
+        this.front = front || {
+            radius: 24,
+            color: "lime"
+        };
+        this.back = back || {
+            radius: 40,
+            color: "black"
+        };
+        this.r = this.front.radius;
+        this.R = this.back.radius;
+        this.c = this.front.color;
+        this.C = this.back.color;
+    }
+    start(e) {
+        if (this.touch && !this.touch.on) {
+            this.touch = {
+                x: e.touches[0].clientX,
+                y: e.touches[0].clientY,
+                on: true
+            };
+            //document.write(this.touch.x);
+            this.back = document.createElement("div");
+            this.back.style.position = "absolute";
+            this.back.style.width = 2 * this.R + "px";
+            this.back.style.height = 2 * this.R + "px";
+            this.back.style.borderRadius = "50%";
+            this.back.style.background = this.C;
+            this.front = document.createElement("div");
+            this.front.style.position = "absolute";
+            this.front.style.width = 2 * this.r + "px";
+            this.front.style.height = 2 * this.r + "px";
+            this.front.style.borderRadius = "50%";
+            this.front.style.background = this.c;
+            this.front.style.left = this.touch.x - this.r + "px";
+            this.front.style.top = this.touch.y - this.r + "px";
+            this.back.style.left = this.touch.x - this.R + "px";
+            this.back.style.top = this.touch.y - this.R + "px";
+            document.body.appendChild(this.back);
+            document.body.appendChild(this.front);
+        }
+    }
+    stop(e) {
+        if (this.touch && this.touch.on) {
+            document.body.removeChild(this.back);
+            document.body.removeChild(this.front);
+            this.touch.on = false;
+            this.on_action = {
+                x:  0,
+                y:  0,
+                dx: 0,
+                dy: 0,
+                degree: 0
+            };
+        }
+    }
+    move(e) {
+        let x = e.touches[0].clientX,
+            y = e.touches[0].clientY;
+        if (this.touch && this.touch.on) {
+            let dx = (x - this.touch.x);
+            let dy = (y - this.touch.y);
+            let l = Math.hypot(dx, dy);
+            let max = 4 * this.R / 5;
+            if (l > max) {
+                dx *= max / l;
+                dy *= max / l
+            }
+            this.front.style.left =
+                parseFloat(this.back.style.left) + dx + this.r / 2 + "px";
+            this.front.style.top =
+                parseFloat(this.back.style.top) + dy + this.r / 2 + "px";
+            dx /= max;
+            dy /= max;
+            let alpha = Math.atan(dy / dx);
+            if (dx < 0) {
+                alpha = alpha + Math.PI;
+            }
+            let degree = (alpha) * (180 / Math.PI);
+            if (degree < 0) {
+                degree += 360;
+            }
+            degree += 90;
+            this.on_action = {
+                x:this.touch.x,
+                y:this.touch.y,
+                dx: dx,
+                dy: dy,
+                degree: degree
+            };
+        }
+    }
+    position() {
+        let data = this.on_action;
+        return data;
+    }
+}
+
+
+
+var stick = {
+    x:0,
+    y:0,
+    dx: 0,
+    dy: 0,
+    degree: 0
+};
+
+function Joystick() {
+    let obj = new create_joystick();
+    //let obj = new create_joystick({on:false},{radius: 24, color: "lime"},{radius: 40, color: "black"});
+    function startPos(e) {
+        obj.start(e);
+        stick = {
+            x : obj.position().x,
+            y : obj.position().y,
+            dx: obj.position().dx,
+            dy: obj.position().dy,
+            degree: obj.position().degree
+        };
+    }
+    function movePos(e) {
+        obj.move(e);
+        stick = {
+            x : obj.position().x,
+            y : obj.position().y,
+            dx: obj.position().dx,
+            dy: obj.position().dy,
+            degree: obj.position().degree
+        };
+    }
+    function stopPos(e) {
+        obj.stop(e);
+        stick = {
+            x : obj.position().x,
+            y : obj.position().y,
+            dx: obj.position().dx,
+            dy: obj.position().dy,
+            degree: obj.position().degree
+        };
+    }
+    document.addEventListener("touchstart", startPos);
+    document.addEventListener("touchmove", movePos);
+    document.addEventListener("touchend", stopPos);
+    document.addEventListener("touchcancel", stopPos);
+}
+  
+</script>
+
+
+<script>
+"use-strict";
+window.addEventListener('load', function(){
+    Joystick();
+     
+    document.onkeydown = function (e) { 
+            if (event.keyCode == 123) { 
+                return false; 
+            } 
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { 
+                return false; 
+            } 
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { 
+                return false; 
+            } 
+            if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { 
+                return false; 
+            } 
+            if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { 
+                return false; 
+            } 
+        } 
+    var log = console.log;
+    
+    
+    var enemies = []; 
+    var enemyImg = new Image();
+    enemyImg.src ="https://assets.cvnaassets.com/home-assets/top-down_car.png";   
+    var playerImg = new Image();
+    playerImg.src ="https://i.ibb.co/LRFsjhy/Clipart-Key-1708882.png";   
+    var aliens  = [];
+    
+  
+    var enemy_width = 30;
+    var enemy_height = 50;
+    var enemy_health=5;
+    
+    var lastTime=0;
+    var bullet_width=3,bullet_height=8;
+    var bullets=[];
+    
+
+ 
+    var tank1 = document.getElementById('tank1');
+    
+   
+    var points=0;
+
+
+   
+    
+
+    var player; 
+    var player_health=100;
+    var playerSpeed = 3;      
+    var move=false;
+    var fire=false;
+    var tank1Pos={x:0,y:0};               
+    
+    var canvas = id("canvas");
+    var c = canvas.getContext("2d");
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+  
+function id(arg){
+  return document.getElementById(arg);
+} 
+ 
+ 
+
+class Player{
+    constructor(x, y, width, height,health){
+
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        
+        this.health = health;
+    }
+
+    update(){
+        c.beginPath();
+        c.save();
+        
+        
+       
+         tank1Pos.x =this.x+this.width/2;
+        tank1Pos.y=this.y+this.height/2;
+      
+        
+        let health_left=(this.health/player_health);
+        c.fillStyle="red"
+        //c.strokeStyle="black";
+        //c.rect(tank1Pos.x,tank1Pos.y, this.width,this.height);
+        c.fillRect( this.x+this.width/2, this.y+this.height*2, this.width*health_left, this.height/10 );
+        c.lineWidth=0.5;
+        
+       
+         
+        c.setTransform(1,0,0,1,0,0);
+        
+        
+        tank1.style.transform = "rotate("+(stick.degree)+"deg)";
+        tank1.style.left=canvas.width/2+this.width/2;
+        tank1.style.top=canvas.height/2+this.height/2;
+
+
+        c.stroke();
+      
+        c.restore();
+        c.closePath();
+      
+    
+        if(this.x + this.width*2 > canvas.width*2) this.x = canvas.width*2 - this.width*2; 
+        if(this.x < -canvas.width) this.x = -canvas.width;
+        if(this.y + this.height*2 > canvas.height*2) this.y = canvas.height*2 - this.height*2; 
+        if(this.y < -canvas.height) this.y = -canvas.height; 
+        
+        
+        if(stick.x > canvas.width/2){
+        this.x += stick.dx*playerSpeed;
+        this.y += stick.dy*playerSpeed;
+        
+        
+    }
+    if(stick.x<canvas.width/2){
+        if(!(stick.dx == 0 && stick.dy==0)){
+            fire = true;
+        }else{
+            fire = false;
+        }   
+    }
+    }
+    
+    shoot(){
+       
+        var bullet = new Bullets(this.x + this.width, this.y + this.height,bullet_width,bullet_height,stick.degree,"black");
+        bullets.push(bullet);
+    
+        }
+
+}
+
+
+class Bullets{
+      constructor(x, y,width,height, angle, color){
+        this.x = x;
+        this.y = y;
+        this.width=width;
+        this.height=height;
+        this.speed = 7;
+        this.angle = angle; 
+        this.color =color;
+      }  
+    
+      update(){
+        c.beginPath();
+        c.save();
+       
+        c.beginPath();
+        c.arc(this.x, this.y, 2, 0, 2 * Math.PI, false);
+        c.fillStyle = 'black';
+        c.fill();
+        c.font = "30px Arial";
+        c.closePath();
+        this.x += this.speed * Math.sin( this.angle * Math.PI/180 );
+        this.y += this.speed *( -Math.cos( this.angle * Math.PI/180 ));
+     }
+
+
+}
+
+
+var player = new Player(canvas.width/2, canvas.height/2, tank1.width, tank1.height,player_health);
+
+
+
+class Enemy{
+  constructor(x, y, width, height, speed,health,id){
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.speed = speed;
+    this.health=health;
+    this.id = id;
+  }
+  
+  update(){
+    
+   
+    if(this.x<tank1Pos.x){
+        this.x+= this.speed;
+
+    }if(this.x>tank1Pos.x){
+        this.x-= this.speed;
+
+    }if(this.y>tank1Pos.y){
+        this.y-= this.speed;
+
+    }if(this.y<tank1Pos.y){
+        this.y+= this.speed;
+    }
+  
+  
+    c.beginPath();
+    c.save();
+    
+    c.lineWidth=1;
+    
+    var health_left=(this.health/5);
+    c.fillStyle="brown";
+    c.drawImage(enemyImg,this.x, this.y,this.width,this.height);
+    c.fillRect( this.x, this.y, this.width*health_left, this.height/10 );
+    c.lineWidth=0.5;
+    
+   
+    c.setTransform(1,0,0,1,0,0);
+    //aliens[this.id].style.left = this.x;;
+   // aliens[this.id].style.top = this.y;;  
+   c.stroke();
+    c.restore();
+    c.closePath();
+}
+}
+
+function collision(a,b){
+       
+        var closeOnWidth=Math.abs(a.x-b.x)<=Math.max(a.width,b.width);
+        var closeOnHeight=Math.abs(a.y-b.y)<=Math.max(a.height,b.height);
+        return (closeOnWidth&&closeOnHeight);
+           
+        
+        
+        
+    }
+
+function clamp(value, min, max){
+    if(value < min) return min;
+    else if(value > max) return max;
+    return value;
+}
+function draw() {
+  
+    c.setTransform(1,0,0,1,0,0);
+    c.clearRect(0, 0, canvas.width, canvas.height);
+    //yourWorld = {minX:0,minY:0,maxX:640,maxY:640} ;    
+
+  //  var camX = clamp(-player.x + canvas.width/2, yourWorld.minX, yourWorld.maxX - canvas.width);
+  //  var camY = clamp(-player.y + canvas.height/2, yourWorld.minY, yourWorld.maxY - canvas.height);
+   
+      let camX = -player.x+canvas.width/2;
+      let camY = -player.y+canvas.height/2;
+    c.translate( camX, camY );    
+
+    //Draw everything
+}
+
+
+function drawEnemies(){
+    
+  for (var _ = 0; _<20; _++){ 
+     
+    //aliens[_] = document.getElementById("car"+(_+1));
+    //aliens[_].style.visibility = "visible";
+    var x = Math.random()*(canvas.width*2-enemy_width);
+    var y = Math.random()*(canvas.height*2-enemy_height);
+    var width = enemy_width;
+    var height = enemy_height;
+    var speed = Math.random()*1;
+    var health=enemy_health;
+    var id = _;
+    var enemy = new Enemy(x, y, width, height, speed,health,id);
+       
+    enemies.push(enemy); 
+  }
+}
+
+function  playerHeathDetection(){
+      for (var i=enemies.length-1;i>=0;i--){
+                      if(collision(player,enemies[i])){
+                        player.health=player.health>0?player.health-0.5:player_health;
+                        if(player.health <1){
+                            points = 0;
+                        }
+                        
+                      }
+
+       }
+}    
+ function targetDeathDetection(){
+        for (var i =bullets.length - 1; i >= 0; i--) {
+            for (var j=enemies.length-1;j>=0;j--){
+
+                    try {
+                      if(collision(bullets[i],enemies[j])){
+                          points+=5;
+                          enemies[j].health-=1;
+                          bullets.splice(i,1);
+                      if(enemies[j].health<1){
+                       // aliens[enemies[j].id].style.visibility = "hidden";
+                          enemies.splice(j,1);
+                          
+                        
+                        
+                      }
+                  
+                
+                      }
+                    }
+                    catch (e) {
+ 
+                    }
+                
+            }
+            
+        }
+ }
+ 
+
+ function score(){
+  c.beginPath();
+  c.save();
+
+  c.setTransform(1,0,0,1,0,0);
+
+  c.font = "bold 20pt Courier";
+
+  c.fillStyle="Black";
+  c.fillText("🅂🄲🄾🅁🄴 :"+points,10,30);
+  c.restore();
+  c.closePath();
+ }
+function drawBackground()
+{   var ctx = c; 
+    cell_width = 20;
+    for(let i = -canvas.width; i <=  2 * canvas.width; i += cell_width)
+    {
+        ctx.beginPath();
+        ctx.strokeStyle = "black" ;
+        ctx.moveTo(i, -canvas.height);
+
+        ctx.lineTo(i, 2 * canvas.height);
+        ctx.stroke();
+    }
+    for(let j = -canvas.height; j <= 2 * canvas.height; j += cell_width)
+    {
+        ctx.beginPath();
+        ctx.strokeStyle = "black" ;
+        ctx.moveTo(-canvas.width, j);
+         
+        ctx.lineTo(2 * canvas.width, j);
+        ctx.stroke();
+        
+    }
+
+   
+}
+
+function GAMELOOP(currentTime){
+
+  window.requestAnimationFrame(GAMELOOP);
+  c.clearRect(0, 0, canvas.width, canvas.height);
+  draw();
+  drawBackground();    
+   
+  if(enemies.length==0){
+     drawEnemies();
+
+  }
+
+
+  for (var i = bullets.length - 1; i >= 0; i--){
+    bullets[i].update();
+    if (bullets[i].x < -canvas.width || bullets[i].x > canvas.width*2 || bullets[i].y > canvas.height*2 || bullets[i].y <-canvas.height){
+      bullets.splice(i, 1);
+    }
+  }
+  
+   player.update();
+   
+  
+  
+  if(fire==true){
+    if(currentTime >= lastTime + 150){
+  
+      lastTime = currentTime;
+      player.shoot();
+      
+
+     
+  }    
+    }
+
+
+   if(currentTime >= lastTime + 500){
+  
+      //lastTime = currentTime;
+      player.health=player.health<player_health?player.health+3:player_health;
+      lastTime = currentTime;
+
+     
+  }  
+
+    
+
+  for(var x=enemies.length-1;x>=0;x--){
+      enemies[x].update();
+  }
+ 
+      targetDeathDetection();
+      playerHeathDetection();  
+      score();
+  
+  
+};
+  
+    GAMELOOP ();
+
+
+  });
+  
+  
+  
+</script>
+<script>
+    var btn = document.getElementById("myBtn");
+btn.addEventListener("click", start);
+    
+    function start() {
+    music = new Audio();
+    music.src = "https://upload.wikimedia.org/wikipedia/commons/e/e5/Tetris_theme.ogg";
+    music.play();
+    music.loop = true;
+  
+    btn.style.visibility = "hidden";
+};
+
+  
+</script>
+<style >
+html,body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    position: fixed;
+    user-select: none;
+}
+body {
+    position: fixed;
+    margin: 0;
+    user-select: none;
+  
+    -webkit-user-select: none;
+
+  background-color:gray;
+  
+}
+  ::-webkit-scrollbar {
+    width: 0;
+}
+  
+  #mybtn{position: absolute;right:0%;}
+
+
+.pads {
+    position: fixed;
+    border-radius: 50%;
+       user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+    }
+
+    #touchPad{
+    border: 4px solid black;
+    right: 0%;
+    width:150px;
+    height:150px;
+    bottom: 0%;
+    opacity:0.6;
+    background-color:gray;
+  
+    }
+
+    #padDot{
+    border: 4px solid black;
+    right: 0%;
+    width:50px;
+    height:50px;
+    bottom: 0%;
+    opacity:0.9;
+    background-color: #f2f2f2;
+    display:none;
+    
+    }
+
+#tank1{
+width:30px;
+height:50px;
+    
+    position:absolute;
+}
+  #car1,#car2,#car3,#car4,#car5,#car6,#car7,#car8,#car9,#car10{
+width:30px;
+height:50px;
+    
+    position:absolute;
+}
+  #navbar-iframe-container{
+   display: none;
+}
+
+    
+</style>
+ </body>
+</html>
